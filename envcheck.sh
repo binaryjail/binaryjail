@@ -17,7 +17,7 @@ then
         exit 1
 fi
 
-docker inspect dockerbox/bases 1>/dev/null
+docker inspect dockerbox/base 1>/dev/null
 if [[ $? != 0 ]]
 then
         echo "BinaryJail doesn't seem to be installed. Running installer..."

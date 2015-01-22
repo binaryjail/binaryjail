@@ -7,6 +7,7 @@ then
 	echo "Docker not found... Press Enter to install (requires admin privileges), ctrl-c to quit:"
 	read line
 	sudo apt-get update && sudo apt-get install -y docker.io
+	sudo chmod a+rw /var/run/docker.sock
 else
 	echo "Found docker at $DOCKER..."
 fi
