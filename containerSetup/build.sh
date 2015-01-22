@@ -27,16 +27,16 @@ else
 fi
 
 #Check ssh key
-SSH_KEY=$HOME/.ssh/dockerbox.pub
+SSH_KEY=$HOME/.ssh/dockerbox
 if [ -f $SSH_KEY ] && [ "`ssh-keygen -l -f $SSH_KEY | grep \"^[0-9]\+\"`" ]
 then
 	echo "Dockerbox keypair found at $SSH_KEY..."
-	cp $SSH_KEY .
 else 
 	echo "Dockerbox keypair not found at $SSH_KEY. Creating..."
 	ssh-keygen -t rsa -f $SSH_KEY -P ""
 	echo "Created..."
 fi
+cp $SSH_KEY.pub .
 
 #Build container
 docker build --rm=true -t dockerbox/base .
