@@ -11,7 +11,9 @@ docker version 1>/dev/null
 
 if [[ $? != 0 ]]
 then
-        echo "Docker not found in PATH! Exiting..."
+        echo "Docker not found in PATH! Running installer..."
+        cd $JAIL_DIR/containerSetup
+        ./build.sh
         exit 1
 fi
 
