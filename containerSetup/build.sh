@@ -6,13 +6,7 @@ if [ -z "$DOCKER" ]
 then
 	echo "Docker not found... Press Enter to install (requires admin privileges), ctrl-c to quit:"
 	read line
-	if curl --version > /dev/null
-	then
-		echo "No need to apt-get update"
-	else
-		sudo apt-get update && sudo apt-get install curl
-	fi
-	curl -sSL https://get.docker.com/ubuntu/ | sudo sh
+	sudo apt-get update && sudo apt-get install -y docker.io
 else
 	echo "Found docker at $DOCKER..."
 fi
