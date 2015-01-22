@@ -1,0 +1,10 @@
+FROM dockerbox/base
+MAINTAINER Andrey Turovsky <andrey@jisto.com>
+
+RUN sudo apt-get update
+
+{SETUP}
+
+EXPOSE 22
+
+ENTRYPOINT ["/usr/sbin/sshd", "-d"]

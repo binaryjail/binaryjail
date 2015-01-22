@@ -1,2 +1,2 @@
 # binaryjail
-A simple-to-use Docker-based sandbox for Linux applications
+A system to automate building, running, and sharing of containerized GUI applications.

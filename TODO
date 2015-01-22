@@ -1,0 +1,4 @@
+- Add pulseaudio forwarding
+- Add shared folder and a way to dynamically share files/folders
+- Add support for other OSes
+- Improve recipe search/sharing system

@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+JAIL_DIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
+WORKING_DIR=$(pwd)
+FILENAME="${0##*/}"
+
+#Check that everything is set up properly
+cd $JAIL_DIR && ./envcheck.sh
+if [[ $? != 0 ]]
+then
+        exit
+fi
+
+#Get the ID of the latest container
+id (){
+	docker ps -l -q
+}
+
+#Get the IP of the container
+# Argument - ID - Container to check (defaults to latest open container)
+ip (){
+	ID=$1
+	if [ -z "$1" ]
+	then
+		ID=$(id)
+		#echo "\$ID set to $(id)"
+	else
+		echo "$ID not set"
+	fi
+
+	docker inspect $ID | grep IPAddress | cut -d '"' -f4
+}
+
+#Find open TCP port of container
+# Argument - ID - Container to check (defaults to latest open container)
+openport (){
+	ID=$1
+	if [ -z "$1" ]
+	then
+		ID=$(id)
+		#echo "\$ID set to $(id)"
+	else
+		echo "$ID not set"
+	fi
+	docker inspect $ID | grep "/tcp\": {}" | tr -d \[:blank:\] | sed -r 's/"([0-9]+)\/tcp.*/\1/'
+}
+
+#SSH log into last started container
+# Argument - COMMAND - Command to send via SSH
+ssh_login (){
+	ARGUMENT=$1
+	CONTAINER_IP=$(ip)
+	KNOWN_HOSTS=$HOME/.ssh/known_hosts
+	echo $CONTAINER_IP
+
+	#Remove known key (if present)
+	command ssh-keygen -f "$KNOWN_HOSTS" -R $CONTAINER_IP
+
+	#SSH into container
+	#Don't check host key and don't add it to the known_hosts file
+	#http://superuser.com/questions/125324/how-can-i-avoid-sshs-host-verification-for-known-hosts
+	#http://superuser.com/questions/141344/dont-add-hostkey-to-known-hosts-for-ssh
+	echo "Calling ssh with argument $ARGUMENT"
+	command ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -CY root@$CONTAINER_IP $ARGUMENT
+}
+
+#Pull git repository (if not found locally) and build container
+# Argument - NAME - Name of application to build
+install (){
+	cd $JAIL_DIR
+	APPLICATION=$1
+	if [ ! -d $PWD/$APPLICATION ]
+	then
+		echo "$PWD/$APPLICATION not found!"
+
+		#Provide empty username and password so it failes if the repo doesn't exist
+		git clone https://:@github.com/binaryjail/jail-$APPLICATION.git $APPLICATION
+		
+		if [[ $? != 0 ]]
+		then
+			echo "No repository for " $APPLICATION " found! Exiting..."
+			exit
+		fi
+	fi
+
+	./containersetup $APPLICATION
+}
+
+#Run container, start SSH connection, run default command
+# Argument - NAME - Name of application to run
+run (){
+	APPLICATION=$1
+	CID=`docker run -i -t -d dockerbox/$APPLICATION`
+	#CID=`docker run -i -t -d g`
+	ssh_login "/run.sh"
+	docker kill $CID
+	docker rm $CID
+}
+
+$@

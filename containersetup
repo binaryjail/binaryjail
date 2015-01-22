@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var spawn = require('child_process').spawn;
+
+var DockerfileTemplate = null;
+
+fs.readFile('DockerfileTemplate', function(err, data){
+		if (err){
+			throw err;
+			return;
+		}
+
+		DockerfileTemplate = data.toString();
+});
+
+var setUpContainer = function(folder, template){
+	
+	fs.readFile(folder + '/config.json', function(err, data){
+		if (err){
+			throw err;
+			return;
+		}
+
+		var buildConfig = JSON.parse(data);
+		//console.dir(buildConfig);
+
+		validateConfig(buildConfig);
+		console.log(DockerfileTemplate);
+		createDockerfile(DockerfileTemplate, buildConfig, folder);
+		buildContainer(folder, buildConfig);
+	});
+}
+
+var validateConfig = function(config){
+	if (config.name == undefined){
+		console.log('ERROR: Container name not specified. Please specify container name.');
+	}
+}
+
+var createDockerfile = function(template, config, folder){
+	var PACKAGES_COMMAND = 'RUN sudo apt-get -y install ';
+	var FILES_COMMAND = 'ADD run.sh /\nRUN chmod +x /run.sh\n\n';
+	var RUN_COMMAND = '#!/usr/bin/env bash\n\n' + config.run.command;
+
+	for (var i in config.packages){
+		PACKAGES_COMMAND += config.packages[i] + ' ';	
+	}
+	PACKAGES_COMMAND += '\n\n';
+
+	var COMMAND = FILES_COMMAND + PACKAGES_COMMAND;
+
+	template = template.replace('{SETUP}', COMMAND);
+	console.log(template);
+
+	fs.writeFile(folder + '/run.sh', RUN_COMMAND, function(err){
+		if (err){
+			throw err;
+			return;
+		}
+	});
+
+	fs.writeFile(folder + '/Dockerfile', template, function(err){
+		if (err){
+			throw err;
+			return;
+		}
+	});
+}
+
+var buildContainer = function(folder, config){
+
+    var build = spawn('docker', ['build', '-t', 'dockerbox/' + config.name, '.'],
+    	{ 	
+    		cwd: folder,
+  			env: process.env
+  		}	
+  	);
+
+	build.stdout.on('data', function (data) {
+	  console.log('stdout: ' + data);
+	});
+
+	build.stderr.on('data', function (data) {
+	  console.log('stderr: ' + data);
+	});
+
+	build.on('close', function (code) {
+	  console.log('Done building dockerbox/' +config.name );
+	  //callback(code);
+	});
+}
+
+console.log('Building container at ' + process.argv[2]);
+setUpContainer(process.argv[2], DockerfileTemplate);
