@@ -4,9 +4,11 @@
 DOCKER=$(which docker)
 if [ -z "$DOCKER" ]
 then
+	echo "Docker not found... Please install Docker before running BinaryJail."
+	exit
+
 	echo "Docker not found... Press Enter to install (requires admin privileges), ctrl-c to quit:"
 	read line
-	#sudo apt-get update && sudo apt-get install -y docker.io
 	sudo apt-get update && sudo apt-get install -y curl
 	curl -sSL https://get.docker.com/ubuntu/ | sudo sh
 	sudo chmod a+rw /var/run/docker.sock
@@ -18,6 +20,9 @@ fi
 NODE=$(which node)
 if [ -z "$NODE" ]
 then
+	echo "Node.js (specifically, the binary named node) not found... Please install Node.js before running BinaryJail."
+	exit
+
 	echo "Node.js not found... Press Enter to install (requires admin privileges), ctrl-c to quit:"
 	read line
 	sudo apt-get update && sudo apt-get install -y nodejs

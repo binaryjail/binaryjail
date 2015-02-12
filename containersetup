@@ -70,7 +70,7 @@ var createDockerfile = function(template, config, folder){
 
 var buildContainer = function(folder, config){
 
-    var build = spawn('docker', ['build', '-t', 'dockerbox/' + config.name, '.'],
+    var build = spawn('docker', ['build', '--no-cache', '-t', 'dockerbox/' + config.name, '.'],
     	{ 	
     		cwd: folder,
   			env: process.env
