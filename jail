@@ -61,7 +61,8 @@ ssh_login (){
 	#http://superuser.com/questions/125324/how-can-i-avoid-sshs-host-verification-for-known-hosts
 	#http://superuser.com/questions/141344/dont-add-hostkey-to-known-hosts-for-ssh
 	echo "Calling ssh with argument $ARGUMENT"
-	command sshpass -p root ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -CY root@$CONTAINER_IP $ARGUMENT
+	#command sshpass -p root ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -CY root@$CONTAINER_IP $ARGUMENT
+	ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -CY root@$CONTAINER_IP $ARGUMENT
 }
 
 #Pull git repository (if not found locally) and build container

@@ -5,14 +5,16 @@ var spawn = require('child_process').spawn;
 
 var DockerfileTemplate = null;
 
-fs.readFile('DockerfileTemplate', function(err, data){
+/*fs.readFile('DockerfileTemplate', function(err, data){
 		if (err){
 			throw err;
 			return;
 		}
 
 		DockerfileTemplate = data.toString();
-});
+});*/
+
+DockerfileTemplate = fs.readFileSync('DockerfileTemplate').toString();
 
 var setUpContainer = function(folder, template){
 	
