@@ -42,7 +42,7 @@ var validateConfig = function(config){
 
 var createDockerfile = function(template, config, folder){
 	var PACKAGES_COMMAND = 'RUN sudo apt-get -y install ';
-	var FILES_COMMAND = 'ADD run.sh /\nRUN chmod +x /run.sh\n\n';
+	var FILES_COMMAND = 'RUN mkdir -p /run\nADD run.sh /\nRUN chmod +x /run.sh\n\n';
 	var RUN_COMMAND = '#!/usr/bin/env bash\n\n' + config.run.command;
 
 	for (var i in config.packages){
@@ -55,7 +55,7 @@ var createDockerfile = function(template, config, folder){
 	template = template.replace('{SETUP}', COMMAND);
 	console.log(template);
 
-	fs.writeFile(folder + '/run.sh', RUN_COMMAND, function(err){
+	fs.writeFile(folder + '/run/run.sh', RUN_COMMAND, function(err){
 		if (err){
 			throw err;
 			return;

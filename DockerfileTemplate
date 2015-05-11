@@ -7,4 +7,5 @@ RUN sudo apt-get update
 
 EXPOSE 22
 
-ENTRYPOINT ["/usr/sbin/sshd", "-d"]
+#ENTRYPOINT ["/usr/sbin/sshd", "-d"]
+ENTRYPOINT ["/runrest.sh"]
