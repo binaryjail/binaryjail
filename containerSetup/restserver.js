@@ -1,3 +1,4 @@
+
 #!/usr/bin/env node
 
 var restify = require('restify');
@@ -60,7 +61,7 @@ server.get('/q/listsubservices/:name', function(req, res, next){
 });
 
 server.get('/q/service/:name/:direction', function(req, res, next){
-	fs.readFile('./' + req.params.name + '/' + req.params.direction + '/resourceLine', function(err, data){
+	fs.readFile('./' + req.params.name + '/' + req.params.direction + '/resourceList', function(err, data){
 		if (err)throw err;
 		else{
 			res.send(data);
