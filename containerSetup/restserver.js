@@ -39,7 +39,7 @@ server.get('/version', function (req, res, next) {
 });
 
 server.get('/q/listservices', function(req, res, next){
-	fs.readdir('.', function(err, files){
+	fs.readdir('/services/', function(err, files){
 		if (err){
 			throw err;
 		}else{
@@ -50,7 +50,7 @@ server.get('/q/listservices', function(req, res, next){
 });
 
 server.get('/q/listsubservices/:name', function(req, res, next){
-	fs.readdir('./' + req.params.name, function(err, files){
+	fs.readdir('/services/' + req.params.name, function(err, files){
 		if (err){
 			throw err;
 		}else{
@@ -61,7 +61,7 @@ server.get('/q/listsubservices/:name', function(req, res, next){
 });
 
 server.get('/q/service/:name/:direction', function(req, res, next){
-	fs.readFile('./' + req.params.name + '/' + req.params.direction + '/resourceList', function(err, data){
+	fs.readFile('/service/' + req.params.name + '/' + req.params.direction + '/resourceList', function(err, data){
 		if (err)throw err;
 		else{
 			res.send(data);
