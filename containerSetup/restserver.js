@@ -2,6 +2,7 @@
 
 var restify = require('restify');
 var exec = require('child_process').exec;
+var fs = require('fs');
 
 var version = '0.0.1';
 
@@ -34,6 +35,46 @@ server.get('/version', function (req, res, next) {
   res.send(version);
   console.log(version);
   return next();
+});
+
+server.get('/q/listservices', function(req, res, next){
+	fs.readdir('.', function(err, files){
+		if (err){
+			throw err;
+		}else{
+			res.send(JSON.stringify(files));
+		}
+		next();
+	});
+});
+
+server.get('/q/listsubservices/:name', function(req, res, next){
+	fs.readdir('./' + req.params.name, function(err, files){
+		if (err){
+			throw err;
+		}else{
+			res.send(JSON.stringify(files));
+		}
+		next();
+	});
+});
+
+server.get('/q/service/:name/:direction', function(req, res, next){
+	fs.readFile('./' + req.params.name + '/' + req.params.direction + '/resourceLine', function(err, data){
+		if (err)throw err;
+		else{
+			res.send(data);
+		}
+		next();
+	});
+});
+
+server.get('/bind', function(req, res, next){
+
+});
+
+server.get('/run', function(req, res, next){
+
 });
 
 server.listen(8080, function () {
