@@ -55,7 +55,7 @@ var createDockerfile = function(template, config, folder){
 	template = template.replace('{SETUP}', COMMAND);
 	console.log(template);
 
-	fs.writeFile(folder + '/run/run.sh', RUN_COMMAND, function(err){
+	fs.writeFile(folder + '/run.sh', RUN_COMMAND, function(err){
 		if (err){
 			throw err;
 			return;
