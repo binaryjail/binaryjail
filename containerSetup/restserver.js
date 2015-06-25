@@ -1,5 +1,12 @@
-
 #!/usr/bin/env node
+function qualifiedNameReduce( name ) {
+	var dotPos=name.lastIndexOf('.');
+	var qualifier=name.slice(0,dotPos);
+	var nameElem=name.slice(dotPos + 1);
+	return { qualifier: qualifier,
+		  name: nameElem
+		};
+}
 
 var restify = require('restify');
 var exec = require('child_process').exec;
@@ -50,21 +57,27 @@ server.get('/q/listservices', function(req, res, next){
 });
 
 server.get('/q/listsubservices/:name', function(req, res, next){
-	fs.readdir('/services/' + req.params.name, function(err, files){
+	fs.readdir('/services/' + req.params.name + '/services/', function(err, files){
 		if (err){
 			throw err;
 		}else{
-			res.send(JSON.stringify(files));
+			var serviceNames=[];
+			files.forEach( function (element, index){
+				serviceNames.push(req.params.name + '.' + element);
+				});
+			res.send(JSON.stringify(serviceNames));
 		}
 		next();
 	});
 });
 
-server.get('/q/service/:name/:direction', function(req, res, next){
-	fs.readFile('/service/' + req.params.name + '/' + req.params.direction + '/resourceList', function(err, data){
+server.get('/q/listresources/:name/:direction', function(req, res, next){
+ 
+        var serviceName=qualifiedNameReduce ( String(req.params.name) )
+	fs.readFile('/services/' + serviceName.qualifier + '/services/' + serviceName.name + '/resource/' + req.params.direction + '/definition/resourceList', {encoding: 'utf-8'}, function(err, data){
 		if (err)throw err;
 		else{
-			res.send(data);
+			res.send(JSON.stringify(data));
 		}
 		next();
 	});
@@ -81,3 +94,4 @@ server.get('/run', function(req, res, next){
 server.listen(8080, function () {
   console.log('%s listening at %s', server.name, server.url);
 });
+
